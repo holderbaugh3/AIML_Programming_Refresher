@@ -1,0 +1,185 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jun 16 12:30:20 2025
+
+@author: holderbaugh jana
+"""
+
+"""
+Course-End ProjectL: Personal Expense Tracker
+
+Problem Statement: In today’s fast-paced world, individuals need to track and manage their expenses
+effectively. Your task is to build a personal expense tracker that allows users to log
+daily expenses, categorize them, and track spending against a monthly budget. The
+tracker should also be able to save and load expenses from a file for future
+reference.
+
+Objectives:
+    1. Design and implement a personal expense tracker that enables users to
+    manage their expenses
+    2. Allow users to categorize expenses and set monthly budgets
+    3. Implement file-handling functionality to save and load expense data
+    4. Create an interactive, menu-driven interface for ease of use 
+"""
+from _functools import reduce
+import csv
+
+class Budget:
+    """
+    Budget is a class with multiple methods used to edit and view a list of expenses.
+    """
+    
+    #expenses is a list of dictionaries with date, category, amount, and description
+    #if all fields are properly populated
+    expenses = []
+    
+    #monthly budget is a float for a monthly budget the user sets
+    monthly_budget = 0.0
+    
+    def __init__(self):
+        pass
+    
+    
+    def add_an_expense(self):
+        """
+        Prompts user for date, category, amount, description of an expense and
+        adds that to the expenses list.
+
+        """
+        #get the data we need
+        #date
+        print("Enter the date of the expense in YYYY-MM-DD format: ")
+        date = input().strip()
+        
+        #category
+        print("Enter the category of the expense: ")
+        cat = input().strip()
+        
+        #amoutn
+        print("Enter the amount spent on the expense: ")
+        amount = input().strip()
+        
+        #description
+        print("Enter the description of the expense: ")
+        des = input().strip()
+        
+        #save to our list
+        self.expenses.append(
+            { 
+                'date': date, 
+                'category': cat, 
+                'amount': amount, 
+                'description': des
+            }
+        )
+
+    def view_expenses(self):
+        """
+        Displays all current expenses.
+        """
+        #iterate through our expenses
+        print("Displaying expenses: ")
+        for i in range(len(self.expenses)):
+            expense = self.expenses[i]
+            if len(expense.keys()) == 4:
+                #verify we have the correct keys
+                if expense['date'] and expense['category'] and expense['amount'] and expense['description']:
+                    print(f"Date: {expense['date']} Category: {expense['category']} Amount: {expense['amount']} Description: {expense['description']}")
+                else:
+                    print('Omitting line of incomplete or invalid data')
+            else:
+                #if we dont have 4 keys then we definitely do not have all the
+                #data needed to display
+                print('Omitting line of incomplete or invalid data')
+        print();
+                
+    def set_budget(self):
+        """
+        Prompts user to set a budget, and converts it to a float to save.
+
+        """
+        print("Input your monthly budget in a numerical value: ")
+        budget = input().strip()
+        self.monthly_budget = float(budget)
+        
+    def track_budget(self):
+        """
+        Compares current spent costs in expenses list to the budget the user set.
+
+        """
+        total_spent = reduce(lambda x, y: x + float(y['amount']), self.expenses, 0)
+        
+        if total_spent < self.monthly_budget:
+            print(f"You have {round(self.monthly_budget - total_spent, 2)} left this month.")
+        elif total_spent == self.monthly_budget:
+            print("You have no money left in budget this month.")
+        else:
+            print(f"You have exceeded the budget by {total_spent - self.monthly_budget}.")
+            
+    def load_expenses(self):
+        """
+        Load expenses from csv.
+
+        """
+        with open('expenses.csv', newline='') as csvfile:
+            reader = csv.DictReader(csvfile, fieldnames=['date', 'category', 'amount', 'description'])
+            for row in reader:
+                new_expenses = []
+                for row in reader:
+                    print(row)
+                    new_expenses.append({ 'date': row['date'], 'category': row['category'], 'amount': row['amount'], 'description': row['description']})
+                
+            self.expenses = new_expenses
+        csvfile.close()
+    
+    def save_expenses(self):
+        """
+        Write expenses to csv.
+
+        """
+        with open('expenses.csv', 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=['date', 'category', 'amount', 'description'])
+            
+            writer.writeheader()
+            for expense in self.expenses:
+                writer.writerow({ 'date': expense['date'], 'category': expense['category'], 'amount': expense['amount'], 'description': expense['description']})
+        csvfile.close()
+            
+            
+    def menu(self):
+        option = None
+        self.load_expenses()
+        while(option != '5'):
+            print("""
+                  Select which number option you'd like to do
+                  1: Add an expense
+                  2: View expenses
+                  3: Track budget
+                  4. Save expenses to file
+                  5: Exit and save expenses
+                  """) 
+            option = input().strip()
+            if option == '1':
+                 self.add_an_expense()
+            elif option == '2':
+                 self.view_expenses()
+            elif option == '3':
+                 self.set_budget()
+                 self.track_budget()
+            elif option == '4':
+                 self.save_expenses()
+            elif option == '5':
+                self.save_expenses()
+                break
+            else:
+                 print("""Invalid selection please pick one of the following                   
+                       1: Add an expense
+                       2: View expenses
+                       3: Track budget
+                       4. Save expenses to file
+                       5: Exit and save expenses
+                       """)
+              
+             
+budget = Budget()
+budget.menu()
