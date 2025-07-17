@@ -3,10 +3,8 @@
 Created on Mon Jun 16 12:30:20 2025
 
 @author: holderbaugh jana
-"""
 
-"""
-Course-End ProjectL: Personal Expense Tracker
+Course-End Project: Personal Expense Tracker
 
 Problem Statement: In today’s fast-paced world, individuals need to track and manage their expenses
 effectively. Your task is to build a personal expense tracker that allows users to log
